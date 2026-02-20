@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="30">
+    <title>Smart Parking System</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f6f9;
+        }
+        .slot-box {
+            width: 180px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            text-align: center;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+        .available {
+            background-color: #28a745;
+        }
+        .occupied {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Welcome {{ request.user.username }}</h2>
+<a href="{% url 'logout' %}">Logout</a>
+
+<h3>Parking Slots</h3>
+
+{% if user_booking %}
+<p style="color:red;">You already booked Slot {{ user_booking.slot_number }}.</p>
+{% endif %}
+
+{% for slot in slots %}
+    <div class="slot-box {% if slot.is_occupied %}occupied{% else %}available{% endif %}">
+        Slot {{ slot.slot_number }}<br>
+
+        {% if slot.is_occupied %}
+            Occupied<br>
+            Ends at: {{ slot.get_expiry_time|date:"h:i A" }}
+        {% else %}
+            {% if not user_booking %}
+                <a href="{% url 'book_slot' slot.id %}" style="color:white;">Book Now</a>
+            {% else %}
+                Not Available
+            {% endif %}
+        {% endif %}
+    </div>
+{% endfor %}
+
+</body>
+</html>
