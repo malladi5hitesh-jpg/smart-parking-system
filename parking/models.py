@@ -11,18 +11,13 @@ class ParkingSlot(models.Model):
     booked_at = models.DateTimeField(null=True, blank=True)
 
     def release_if_expired(self):
-        if self.booked_at:
-            expiry_time = self.booked_at + timedelta(hours=1)  # 🔥 TEST VERSION
-            if timezone.now() > expiry_time:
+        if self.is_occupied and self.booked_at:
+            # 🔥 1 hour duration logic
+            if timezone.now() >= self.booked_at + timedelta(hours=1):
                 self.is_occupied = False
                 self.booked_by = None
                 self.booked_at = None
                 self.save()
-
-    def get_expiry_time(self):
-        if self.booked_at:
-            return self.booked_at + timedelta(minutes=1)
-        return None
 
     def __str__(self):
         return f"Slot {self.slot_number}"
